@@ -19,4 +19,8 @@ public class ArticleQueryDto {
 
     @ApiModelProperty(value = "标签id")
     private Integer tagId;
+    @ApiModelProperty(value = "内容类型")
+    private String contentType;
+    @ApiModelProperty(value = "难度级别")
+    private String difficulty;
 }

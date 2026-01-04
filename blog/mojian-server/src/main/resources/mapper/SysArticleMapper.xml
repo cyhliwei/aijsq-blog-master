@@ -175,6 +175,12 @@
             <if test="query.categoryId != null">
                 and a.category_id = #{query.categoryId}
             </if>
+            <if test="query.contentType != null and query.contentType != ''">
+                and a.content_type like concat('%',#{query.contentType},'%')
+            </if>
+            <if test="query.difficulty != null and query.difficulty != ''">
+                and a.difficulty = #{query.difficulty}
+            </if>
             <if test="query.tagId != null">
                 AND a.id in (SELECT article_id FROM sys_article_tag WHERE tag_id = #{query.tagId})
             </if>

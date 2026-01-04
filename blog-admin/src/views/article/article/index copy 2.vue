@@ -22,18 +22,18 @@
           </el-select>
         </el-form-item>
         <!-- 新增：AI相关筛选 -->
-        <el-form-item label="内容类型" prop="0">
+        <el-form-item label="内容类型" prop="contentType">
           <el-select v-model="queryParams.contentType" placeholder="请选择类型" clearable>
             <el-option label="全部" value="" />
-            <el-option label="文章" value="0" />
-            <el-option label="教程" value="1" />
+            <el-option label="文章" value="article" />
+            <el-option label="教程" value="tutorial" />
           </el-select>
         </el-form-item>
-        <el-form-item label="难度级别" prop="difficulty" v-if="queryParams.contentType === '1'">
+        <el-form-item label="难度级别" prop="difficulty" v-if="queryParams.contentType === 'tutorial'">
           <el-select v-model="queryParams.difficulty" placeholder="请选择难度" clearable>
-            <el-option label="初级" value="0" />
-            <el-option label="中级" value="1" />
-            <el-option label="高级" value="2" />
+            <el-option label="初级" value="beginner" />
+            <el-option label="中级" value="intermediate" />
+            <el-option label="高级" value="advanced" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -1013,9 +1013,9 @@ const handleUpdate = (row: any) => {
   getDetailApi(row.id).then((res) => {
     Object.assign(form, res.data)
     // 如果后端返回了tags数组，转换为字符串数组
-    // if (res.data.tags && Array.isArray(res.data.tags)) {
-    //   form.tags = res.data.tags.map(tag => tag.name)
-    // }
+    if (res.data.tags && Array.isArray(res.data.tags)) {
+      form.tags = res.data.tags.map(tag => tag.name)
+    }
   })
 }
 

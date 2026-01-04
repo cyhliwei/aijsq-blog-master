@@ -1,13 +1,13 @@
 <template>
   <div class="home-container">
     <!-- 顶部导航栏 -->
-    <el-header class="main-header">
+    <!-- <el-header class="main-header">
       <div class="header-content">
         <div class="logo-area">
           <h1 class="logo">
             <span class="logo-icon">🤖</span>
             <span class="logo-text">AI技术圈</span>
-            <!-- <span class="logo-domain">aijsq.com</span> -->
+            <span class="logo-domain">aijsq.com</span>
           </h1>
           <p class="slogan">连接AI技术，构建智能未来</p>
         </div>
@@ -45,7 +45,7 @@
           <el-button type="text" icon="el-icon-user" class="user-btn">登录/注册</el-button>
         </div>
       </div>
-    </el-header>
+    </el-header> -->
 
     <!-- 主要内容区 -->
     <div class="main-content">

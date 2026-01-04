@@ -56,10 +56,10 @@
       </div>
 
       <div class="nav-right">
-        <!-- <a href="javascript:void(0)" class="search-btn" @click="handleSearch">
+        <a href="javascript:void(0)" class="search-btn" @click="handleSearch">
           <i class="fas fa-search"></i>
           <span class="search-text">搜索</span>
-        </a> -->
+        </a>
 
         <!-- 修改消息按钮的跳转路径 -->
         <router-link to="/notifications" class="message-btn">
@@ -128,7 +128,7 @@ export default {
         },
         {
           name: 'AI快讯', 
-          path: '/', 
+          path: '/categories', 
           icon: 'fas fa-clock',
           colorClass: 'clock-link'
         },
@@ -166,13 +166,13 @@ export default {
         },
         { 
           name: '工具库', 
-          path: '/hotSearch', 
+          path: '/hotSearch',  
           icon: 'fas fa-fire',
           colorClass: 'hot-link'
         },
         { 
           name: '实战教程', 
-          path: '/hotSearch', 
+          path: '/tags', 
           icon: 'fas fa-fire',
           colorClass: 'hot-link'
         },
@@ -193,13 +193,14 @@ export default {
           path: '/photos', 
           icon: 'fas fa-images',
           colorClass: 'photos-link'
-        },
-        { 
-          name: '留言板', 
-          path: '/messages', 
-          icon: 'fas fa-envelope',
-          colorClass: 'message-link'
         }
+        // },
+        // { 
+        //   name: '留言板', 
+        //   path: '/messages', 
+        //   icon: 'fas fa-envelope',
+        //   colorClass: 'message-link'
+        // }
         // },
         // { 
         //   name: '友情链接', 
