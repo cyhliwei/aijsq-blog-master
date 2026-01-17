@@ -11,11 +11,11 @@ spring:
     username: aijsq_blog
     password: 
   redis:
-    host: 139.9.208.63
+    host: 
     port: 6379
     timeout: 3000
     database: 4
-    password: cyh123@@@
+    password: 
 
 
 #==============================knife4j配置==============================
