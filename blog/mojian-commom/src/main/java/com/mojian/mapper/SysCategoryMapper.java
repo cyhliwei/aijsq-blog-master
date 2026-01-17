@@ -3,8 +3,10 @@ package com.mojian.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.mojian.vo.article.CategoryListVo;
 import com.mojian.entity.SysCategory;
+import com.mojian.vo.article.SysCategoryVo;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -15,4 +17,5 @@ import java.util.List;
 public interface SysCategoryMapper extends BaseMapper<SysCategory> {
     List<CategoryListVo> getArticleCategories();
 
+    List<HashMap<String, Object>> quickNavs();
 }

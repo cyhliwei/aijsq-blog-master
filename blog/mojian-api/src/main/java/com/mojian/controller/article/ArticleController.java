@@ -39,7 +39,11 @@ public class ArticleController {
     public Result<ArticleDetailVo> getArticleDetail(@PathVariable Long id) {
         return Result.success(articleService.getArticleDetail(id));
     }
-
+    @GetMapping("/detailByMenuId/{menuId}")
+    @ApiOperation(value = "获取文章详情")
+    public Result<ArticleDetailVo> detailByMenuId(@PathVariable String menuId) {
+        return Result.success(articleService.getDetailByMenuId(menuId));
+    }
     @GetMapping("/archive")
     @ApiOperation(value = "获取归档")
     public Result<List<ArchiveListVo>> getArticleArchive() {

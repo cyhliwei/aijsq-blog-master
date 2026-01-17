@@ -60,5 +60,5 @@ public interface ArticleService {
     List<SysCategory> getCategoryAll();
 
 
-
+    ArticleDetailVo getDetailByMenuId(String menuId);
 }

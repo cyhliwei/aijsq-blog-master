@@ -150,6 +150,8 @@ public class SysArticle implements Serializable {
 
     @ApiModelProperty(value = "转载地址")
     private String originalUrl;
+    @ApiModelProperty(value = "agi菜单id")
+    private String menuId;
 
     @ApiModelProperty(value = "文章阅读量")
     private Integer quantity;
@@ -183,4 +185,7 @@ public class SysArticle implements Serializable {
 
     @ApiModelProperty(value = "发布时间")
     private LocalDateTime publishedAt;
+    @TableField(exist = false)
+    private SysCategory category;
+
 }

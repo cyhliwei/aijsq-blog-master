@@ -27,7 +27,16 @@
         <div class="footer-content">
           <div class="footer-logo">
             <h2>AI技术圈</h2>
-            <p>aijsq.com</p>
+            
+            <div class="copyright">
+              <p>aijsq.com</p>
+              <a href="https://beian.miit.gov.cn/" 
+                target="_blank" 
+                rel="noopener"
+                class="record">
+                备案：{{$store.state.webSiteInfo.recordNum}}
+                </a>
+            </div>
             <p class="footer-slogan">探索AI无限可能，共创智能未来</p>
           </div>
           
@@ -71,7 +80,7 @@
               <el-button circle><i class="el-icon-zhihu"></i></el-button>
               <el-button circle><i class="el-icon-github"></i></el-button>
             </div>
-            <p class="copyright">© 2024 aijsq.com AI技术圈 版权所有</p>
+            <p class="copyright">© 2026 aijsq.com AI技术圈 版权所有</p>
           </div>
         </div>
       </footer>
@@ -158,7 +167,6 @@ export default {
 .copyright {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: $spacing-sm;
   flex-wrap: wrap;
   font-size: 0.875rem;
@@ -267,9 +275,9 @@ export default {
 }
 
 .copyright {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 12px;
-  margin-top: 20px;
+  color: rgb(202 202 211);
+  font-size: 15px;
+  margin-top: 10px 0px;
 }
 /* 响应式设计 */
 @media (max-width: 992px) {

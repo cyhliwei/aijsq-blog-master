@@ -151,7 +151,17 @@ export function createArticleApi(data) {
     data
   })
 }
-
+/**
+ * 创建文章
+ * @param {Object} data 文章数据
+ */
+export function createArticleByAgiApi(data) {
+  return request({
+    url: '/sys/article/addAgi',
+    method: 'post',
+    data
+  })
+}
 /**
  * 获取文章详情
  */

@@ -32,7 +32,7 @@
           <span class="nav-text">群聊</span>
         </div>
       </div>
-      <div class="nav-bottom">
+      <!-- <div class="nav-bottom">
         <a
           class="nav-item"
           href="https://gitee.com/quequnlong/shiyi-blog"
@@ -42,7 +42,7 @@
           <i class="fab fa-github"></i>
           <span class="nav-text">源码</span>
         </a>
-      </div>
+      </div> -->
     </div>
 
     <!-- 遮罩层 -->

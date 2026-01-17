@@ -7,7 +7,7 @@
     <TheFooter />
     <FloatingButtons />
     <Lantern />
-    <RandomVideo />
+    <!-- <RandomVideo /> -->
     <div class="cursor-container"></div>
     <ContextMenu ref="contextMenuRef" />
   </div>

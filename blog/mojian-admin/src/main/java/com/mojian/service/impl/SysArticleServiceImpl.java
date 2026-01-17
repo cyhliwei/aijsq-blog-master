@@ -5,10 +5,12 @@ import cn.hutool.core.thread.ThreadUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mojian.common.Constants;
 import com.mojian.common.ResultCode;
 import com.mojian.dto.article.ArticleQueryDto;
+import com.mojian.entity.SysAiTrend;
 import com.mojian.entity.SysArticle;
 import com.mojian.entity.SysCategory;
 import com.mojian.entity.SysTag;
@@ -17,6 +19,7 @@ import com.mojian.mapper.SysArticleMapper;
 import com.mojian.mapper.SysCategoryMapper;
 import com.mojian.mapper.SysTagMapper;
 import com.mojian.service.SysArticleService;
+import com.mojian.service.SysCategoryService;
 import com.mojian.utils.AiUtil;
 import com.mojian.utils.PageUtil;
 import com.mojian.vo.article.ArticleListVo;
@@ -32,10 +35,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +50,7 @@ public class SysArticleServiceImpl extends ServiceImpl<SysArticleMapper, SysArti
 
     private final AiUtil aiUtil;
     private final SysCategoryMapper sysCategoryMapper;
+    private final SysCategoryService categoryService;
 
     @Override
     public IPage<ArticleListVo> selectPage(ArticleQueryDto articleQueryDto) {
@@ -74,7 +80,10 @@ public class SysArticleServiceImpl extends ServiceImpl<SysArticleMapper, SysArti
         SysArticle obj = new SysArticle();
         BeanUtils.copyProperties(sysArticle, obj);
         obj.setUserId(StpUtil.getLoginIdAsLong());
-
+        if(obj.getContentType()=="1"){
+            String timeStr1= LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            obj.setPublishedAt(LocalDateTime.parse(timeStr1));
+        }
         //添加分类
         addCategory(sysArticle, obj);
         baseMapper.insert(obj);
@@ -178,6 +187,55 @@ public class SysArticleServiceImpl extends ServiceImpl<SysArticleMapper, SysArti
         }
     }
 
+    @Override
+    public Boolean addAgi(SysArticleDetailVo sysArticleVo) {
+        SysArticle obj = new SysArticle();
+        BeanUtils.copyProperties(sysArticleVo, obj);
+        obj.setUserId(StpUtil.getLoginIdAsLong());
+        LambdaQueryWrapper<SysArticle> wrapper = new LambdaQueryWrapper<>();
+        // 构建查询条件
+        wrapper.eq(obj.getMenuId() != null && obj.getMenuId()!="", SysArticle::getMenuId, obj.getMenuId());
+        if(baseMapper.selectCount(wrapper)>0) {
+            return false;
+        }
+        //添加分类
+        addCategoryByAgi(sysArticleVo, obj);
+        baseMapper.insert(obj);
+
+        addTagsByAgi(sysArticleVo, obj);
+
+        ThreadUtil.execAsync(() -> {
+            String res = aiUtil.send(obj.getContent() + "请提供一段简短的介绍描述该文章的内容");
+            if (StringUtils.isNotBlank(res)) {
+                obj.setAiDescribe(res);
+                baseMapper.updateById(obj);
+            }
+        });
+        return true;
+    }
+
+    private void addTagsByAgi(SysArticleDetailVo sysArticleVo, SysArticle obj) {
+        //添加标签
+        List<Integer> tagIds = new ArrayList<>();
+        for (String tag : sysArticleVo.getTags()) {
+            SysTag sysTag = sysTagMapper.selectOne(new LambdaQueryWrapper<SysTag>().eq(SysTag::getName, tag));
+            if (sysTag == null) {
+                sysTag = SysTag.builder().name(tag).build();
+                sysTagMapper.insert(sysTag);
+            }
+            tagIds.add(sysTag.getId());
+        }
+        sysTagMapper.addArticleTagRelations(obj.getId(), tagIds);
+    }
+    private void addCategoryByAgi(SysArticleDetailVo sysArticleVo, SysArticle obj) {
+        SysCategory sysCategory = sysCategoryMapper.selectOne(new LambdaQueryWrapper<SysCategory>()
+                .eq(SysCategory::getName, sysArticleVo.getCategoryName()));
+        if (sysCategory == null) {
+            sysCategory = SysCategory.builder().name(sysArticleVo.getCategoryName()).build();
+            sysCategoryMapper.insert(sysCategory);
+        }
+        obj.setCategoryId(sysCategory.getId());
+    }
     private void addCategory(SysArticleDetailVo sysArticle, SysArticle obj) {
         SysCategory sysCategory = sysCategoryMapper.selectOne(new LambdaQueryWrapper<SysCategory>()
                 .eq(SysCategory::getName, sysArticle.getCategoryName()));
@@ -200,5 +258,61 @@ public class SysArticleServiceImpl extends ServiceImpl<SysArticleMapper, SysArti
             tagIds.add(sysTag.getId());
         }
         sysTagMapper.addArticleTagRelations(obj.getId(), tagIds);
+    }
+    @Override
+    public Map<String, Object> getSeoArticleList(Integer page, Integer size) {
+        // 分页查询已发布文章，按创建时间倒序
+        Page<SysArticle> articlePage = new Page<>(page, size);
+        LambdaQueryWrapper<SysArticle> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysArticle::getStatus, 1)  // 只查询已发布
+                .orderByDesc(SysArticle::getCreateTime);
+
+        Page<SysArticle> result = page(articlePage, wrapper);
+
+        // 批量查询分类信息
+        List<Integer> categoryIds = result.getRecords().stream()
+                .map(SysArticle::getCategoryId)
+                .filter(id -> id != null)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Map<Integer, SysCategory> categoryMap = new HashMap<>();
+        if (!categoryIds.isEmpty()) {
+            List<SysCategory> categories = categoryService.listByIds(categoryIds);
+            categoryMap = categories.stream()
+                    .collect(Collectors.toMap(SysCategory::getId, c -> c));
+        }
+
+        // 设置分类信息到文章对象中
+        Map<Integer, SysCategory> finalCategoryMap = categoryMap;
+        result.getRecords().forEach(article -> {
+            if (article.getCategoryId() != null) {
+                article.setCategory(finalCategoryMap.get(article.getCategoryId()));
+            }
+        });
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("records", result.getRecords());
+        data.put("total", result.getTotal());
+        return data;
+    }
+
+    @Override
+    public Map<String, Object> getSeoArticleByCategory(Long categoryId, Integer page, int size) {
+        Page<SysArticle> articlePage = new Page<>(page, size);
+        LambdaQueryWrapper<SysArticle> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysArticle::getStatus, 1)
+                .eq(SysArticle::getCategoryId, categoryId)
+                .orderByDesc(SysArticle::getCreateTime);
+
+        Page<SysArticle> result = page(articlePage, wrapper);
+
+        SysCategory category = categoryService.getById(categoryId);
+        result.getRecords().forEach(article -> article.setCategory(category));
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("records", result.getRecords());
+        data.put("total", result.getTotal());
+        return data;
     }
 }

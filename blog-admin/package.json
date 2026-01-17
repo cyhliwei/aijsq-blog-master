@@ -26,7 +26,8 @@
     "screenfull": "^6.0.2",
     "svg-sprite-loader": "^6.0.11",
     "vue": "^3.2.47",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",

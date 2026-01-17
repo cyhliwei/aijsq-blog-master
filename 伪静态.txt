@@ -1,0 +1,30 @@
+location / {
+  if (!-e $request_filename) {
+    rewrite  ^(.*)$ /index.html?s=/$1  last;
+    break;
+  }
+}
+location /aijsq{		
+    proxy_pass http://127.0.0.1:8800/aijsq; #修改这里为你的jar包运行后的地址，如果端口和项目根路径有改动这里就需要改，如果没有则不要动
+    proxy_set_header   Host             $host;
+    proxy_set_header   X-Real-IP        $remote_addr;						
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    proxy_http_version 1.1;
+    proxy_read_timeout   3600s;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+location /admin{
+    alias   /www/wwwroot/139.9.208.66/dist; #修改这里为你存放后台管理系统端dist文件夹的地址，
+    index  index.html index.htm;
+    try_files $uri $uri/ /index.html ;	
+}
+
+#error_page  404              /404.html;
+
+# redirect server error pages to the static page /50x.html
+#
+error_page   500 502 503 504  /50x.html;
+location = /50x.html {
+    root   html;
+}

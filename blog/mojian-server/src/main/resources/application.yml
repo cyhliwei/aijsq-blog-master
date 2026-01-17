@@ -1,6 +1,12 @@
 spring:
   profiles:
-    active: dev
+    active: pro
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: true  # 生产环境开启缓存
+    mode: HTML
+    encoding: UTF-8
 
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:

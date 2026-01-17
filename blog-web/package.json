@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@riophae/vue-treeselect": "^0.4.0",
     "@types/dompurify": "^3.2.0",
     "animate.css": "^4.1.1",
     "axios": "^1.6.7",

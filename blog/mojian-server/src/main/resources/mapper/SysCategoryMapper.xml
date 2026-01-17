@@ -28,4 +28,35 @@
             a.is_stick DESC,
             a.create_time DESC
     </select>
+
+    <resultMap id="resultCateMap" type="com.mojian.vo.article.SysCategoryVo">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="icon" column="icon"/>
+    </resultMap>
+    <!-- CONCAT('/', c.type, '/', c.slug) AS path,-->
+    <select id="quickNavs" resultType="HashMap">
+        SELECT
+            c.id,
+            c.name,
+            c.description,
+            c.icon,
+--             CASE
+--                 WHEN c.type = 0 THEN '#409EFF'
+--                 WHEN c.type = 1 THEN '#67C23A'
+--                 WHEN c.type = 2 THEN '#E6A23C'
+--                 WHEN c.type = 3 THEN '#F56C6C'
+--                 ELSE '#909399'
+--                 END AS color,
+            c.bg_color AS color,
+            CONCAT('/', c.slug) AS path,
+            (SELECT COUNT(*) FROM sys_article a WHERE a.category_id = c.id AND a.status = 1) AS articles,
+            (SELECT COUNT(DISTINCT user_id) FROM sys_article a WHERE a.category_id = c.id) AS users
+        FROM sys_category c
+        WHERE c.is_active = 1
+          AND c.type IN (0, 1, 2, 3)
+        ORDER BY c.sort ASC
+            LIMIT 6;
+    </select>
 </mapper>

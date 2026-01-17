@@ -21,8 +21,7 @@
             <el-option v-for="item in statusOptions" :key="item.id" :value="item.value" :label="item.label" />
           </el-select>
         </el-form-item>
-        <!-- 新增：AI相关筛选 -->
-        <el-form-item label="内容类型" prop="0">
+        <el-form-item label="内容类型" prop="contentType">
           <el-select v-model="queryParams.contentType" placeholder="请选择类型" clearable>
             <el-option label="全部" value="" />
             <el-option label="文章" value="0" />
@@ -39,7 +38,6 @@
         <el-form-item>
           <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          <!-- 新增：AI快速操作 -->
           <el-button type="warning" icon="MagicStick" @click="showAIOptions = !showAIOptions">
             AI操作
           </el-button>
@@ -77,26 +75,29 @@
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <ButtonGroup>
-            <el-button type="primary" icon="Plus" @click="handleAdd" v-permission="['sys:article:add']">新增文章</el-button>
-            <!-- 新增：AI快速创建按钮 -->
-            <el-dropdown @command="handleAICreate">
-              <el-button type="primary">
-                AI快速创建<el-icon class="el-icon--right"><arrow-down /></el-icon>
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="ai-tutorial">AI教程</el-dropdown-item>
-                  <el-dropdown-item command="ai-article">AI文章</el-dropdown-item>
-                  <el-dropdown-item command="ai-translate">AI翻译</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-            <el-button type="danger" icon="Delete" :disabled="selectedIds.length === 0"
-              v-permission="['sys:article:delete']" @click="handleBatchDelete">批量删除</el-button>
-            <el-button type="warning" icon="Setting" v-permission="['sys:article:reptile']"
-              @click="reptileDialog.visible = true">爬取文章</el-button>
-          </ButtonGroup>
+          <div class="flex justify-between">
+            <div>
+              <el-button type="primary" icon="Plus" @click="handleAdd" v-permission="['sys:article:add']">新增文章</el-button>
+              <el-dropdown @command="handleAICreate">
+                <el-button type="primary">
+                  AI快速创建<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="ai-tutorial">AI教程</el-dropdown-item>
+                    <el-dropdown-item command="ai-article">AI文章</el-dropdown-item>
+                    <el-dropdown-item command="ai-translate">AI翻译</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+            <div>
+              <el-button type="danger" icon="Delete" :disabled="selectedIds.length === 0"
+                v-permission="['sys:article:delete']" @click="handleBatchDelete">批量删除</el-button>
+              <el-button type="warning" icon="Setting" v-permission="['sys:article:reptile']"
+                @click="reptileDialog.visible = true">爬取文章</el-button>
+            </div>
+          </div>
         </div>
       </template>
 
@@ -112,15 +113,13 @@
           <template #default="scope">
             <div class="flex flex-col items-start">
               <span style="color: var(--el-color-primary);">{{ scope.row.title }}</span>
-              <!-- 新增：内容类型标签 -->
               <div v-if="scope.row.contentType" class="mt-1">
                 <el-tag 
                   size="mini" 
-                  :type="scope.row.contentType === 'tutorial' ? 'success' : 'info'"
+                  :type="scope.row.contentType === '1' ? 'success' : 'info'"
                 >
-                  {{ scope.row.contentType === 'tutorial' ? '教程' : '文章' }}
+                  {{ scope.row.contentType === '1' ? '教程' : '文章' }}
                 </el-tag>
-                <!-- 难度标签 -->
                 <el-tag 
                   v-if="scope.row.difficulty" 
                   size="mini" 
@@ -167,14 +166,13 @@
             </span>
           </template>
         </el-table-column>
-        <!-- 新增：AI相关列 -->
-        <el-table-column label="是否精选" align="center" v-if="queryParams.contentType === 'tutorial'">
+        <el-table-column label="是否精选" align="center" v-if="queryParams.contentType === '1'">
           <template #default="{ row }">
             <el-tag v-if="row.isFeatured" type="warning" size="small">精选</el-tag>
             <el-tag v-else type="info" size="small">普通</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="是否热门" align="center" v-if="queryParams.contentType === 'tutorial'">
+        <el-table-column label="是否热门" align="center" v-if="queryParams.contentType === '1'">
           <template #default="{ row }">
             <el-tag v-if="row.isHot" type="danger" size="small">热门</el-tag>
             <el-tag v-else type="info" size="small">普通</el-tag>
@@ -188,21 +186,20 @@
               v-permission="['sys:article:update']">修改</el-button>
             <el-button type="danger" link icon="Delete" @click="handleDelete(scope.row)"
               v-permission="['sys:article:delete']">删除</el-button>
-            <!-- 新增：AI快速操作 -->
             <el-dropdown>
               <el-button type="info" link icon="More" />
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item @click="handleSetAsTutorial(scope.row)">
-                    {{ scope.row.contentType === 'tutorial' ? '设为文章' : '设为教程' }}
+                    {{ scope.row.contentType === '1' ? '设为文章' : '设为教程' }}
                   </el-dropdown-item>
                   <el-dropdown-item @click="handleGenerateDescription(scope.row)">
                     生成AI描述
                   </el-dropdown-item>
-                  <el-dropdown-item @click="handleSetFeatured(scope.row)">
+                  <el-dropdown-item @click="handleSetFeatured(scope.row)" v-if="scope.row.contentType === '1'">
                     {{ scope.row.isFeatured ? '取消精选' : '设为精选' }}
                   </el-dropdown-item>
-                  <el-dropdown-item @click="handleSetHot(scope.row)">
+                  <el-dropdown-item @click="handleSetHot(scope.row)" v-if="scope.row.contentType === '1'">
                     {{ scope.row.isHot ? '取消热门' : '设为热门' }}
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -225,17 +222,18 @@
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="1400px" top="3vh" :close-on-click-modal="false">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="文章标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入文章标题" />
-          <!-- 新增：AI生成标题按钮 -->
-          <el-button 
-            type="text" 
-            @click="generateAITitle" 
-            class="ml-2"
-            icon="MagicStick"
-            v-if="dialog.type === 'add'"
-          >
-            AI生成标题
-          </el-button>
+          <div class="flex items-center">
+            <el-input v-model="form.title" placeholder="请输入文章标题" style="flex: 1" />
+            <el-button 
+              type="text" 
+              @click="generateAITitle" 
+              class="ml-2"
+              icon="MagicStick"
+              v-if="dialog.type === 'add'"
+            >
+              AI生成标题
+            </el-button>
+          </div>
         </el-form-item>
 
         <el-form-item label="文章封面" prop="cover">
@@ -243,16 +241,17 @@
         </el-form-item>
 
         <el-form-item label="文章简介" prop="summary">
-          <el-input v-model="form.summary" type="textarea" :rows="3" placeholder="请输入文章简介" />
-          <!-- 新增：AI生成简介按钮 -->
-          <el-button 
-            type="text" 
-            @click="generateAISummary" 
-            class="ml-2"
-            icon="MagicStick"
-          >
-            AI生成简介
-          </el-button>
+          <div class="flex items-start">
+            <el-input v-model="form.summary" type="textarea" :rows="3" placeholder="请输入文章简介" style="flex: 1" />
+            <el-button 
+              type="text" 
+              @click="generateAISummary" 
+              class="ml-2"
+              icon="MagicStick"
+            >
+              AI生成简介
+            </el-button>
+          </div>
         </el-form-item>
 
         <el-row :gutter="20" class="mb-20">
@@ -267,7 +266,6 @@
               >
                 {{ form.categoryName }}
               </el-tag>
-              <!-- 分类选项 -->
               <el-popover
                 placement="bottom-start"
                 width="460"
@@ -275,14 +273,12 @@
                 v-if="!form.categoryName"
               >
                 <div class="popover-title">分类</div>
-                <!-- 输入框 -->
                 <el-input
                   style="width: 100%"
                   v-model="categoryName"
                   placeholder="请输入分类名,enter添加自定义分类"
                   @keyup.enter="saveCategory"
                 />
-                <!-- 分类 -->
                 <div class="popover-container">
                   <div>添加分类</div>
                   <el-tag
@@ -312,7 +308,6 @@
               >
                 {{ item }}
               </el-tag>
-              <!-- 标签选项 -->
               <el-popover
                 placement="bottom-start"
                 width="460"
@@ -320,14 +315,12 @@
                 v-if="form.tags && form.tags.length < 3"
               >
                 <div class="popover-title">标签</div>
-                <!-- 搜索框 -->
                 <el-input
                   style="width: 100%"
                   v-model="tagName"
                   placeholder="请输入标签名,enter添加自定义标签"
                   @keyup.enter="saveTag"
                 />
-                <!-- 标签 -->
                 <div class="popover-container">
                   <div>添加标签</div>
                   <el-tag
@@ -347,22 +340,22 @@
           </el-col>
         </el-row>
 
-        <!-- 新增：AI相关内容类型选择 -->
+        <!-- AI相关内容类型选择 -->
         <el-row :gutter="20" class="mb-20">
           <el-col :span="8">
             <el-form-item label="内容类型" prop="contentType">
               <el-select v-model="form.contentType" placeholder="请选择内容类型" @change="handleContentTypeChange">
-                <el-option label="文章" value="article" />
-                <el-option label="教程" value="tutorial" />
+                <el-option label="文章" value="0" />
+                <el-option label="教程" value="1" />
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8" v-if="form.contentType === 'tutorial'">
+          <el-col :span="8" v-if="form.contentType === '1'">
             <el-form-item label="难度级别" prop="difficulty">
               <el-select v-model="form.difficulty" placeholder="请选择难度">
-                <el-option label="初级" value="beginner" />
-                <el-option label="中级" value="intermediate" />
-                <el-option label="高级" value="advanced" />
+                <el-option label="初级" value="0" />
+                <el-option label="中级" value="1" />
+                <el-option label="高级" value="2" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -379,8 +372,8 @@
           </el-col>
         </el-row>
 
-        <!-- 新增：教程相关字段 -->
-        <el-row :gutter="20" class="mb-20" v-if="form.contentType === 'tutorial'">
+        <!-- 教程相关字段 -->
+        <el-row :gutter="20" class="mb-20" v-if="form.contentType === '1'">
           <el-col :span="8">
             <el-form-item label="是否精选" prop="isFeatured">
               <el-switch v-model="form.isFeatured" :active-value="1" :inactive-value="0" />
@@ -456,29 +449,32 @@
           </el-col>
         </el-row>
 
-        <!-- 新增：AI描述 -->
+        <!-- AI描述 -->
         <el-form-item label="AI描述" prop="aiDescribe" class="mb-20">
-          <el-input 
-            v-model="form.aiDescribe" 
-            type="textarea" 
-            :rows="3" 
-            placeholder="AI生成的简短描述" 
-          />
-          <el-button 
-            type="text" 
-            @click="generateAIDescription" 
-            class="ml-2"
-            icon="MagicStick"
-          >
-            生成AI描述
-          </el-button>
+          <div class="flex items-start">
+            <el-input 
+              v-model="form.aiDescribe" 
+              type="textarea" 
+              :rows="3" 
+              placeholder="AI生成的简短描述" 
+              style="flex: 1"
+            />
+            <el-button 
+              type="text" 
+              @click="generateAIDescription" 
+              class="ml-2"
+              icon="MagicStick"
+            >
+              生成AI描述
+            </el-button>
+          </div>
         </el-form-item>
 
         <el-form-item label="文章内容" prop="contentMd" class="mb-20">
           <mavon-editor placeholder="输入文章内容..." style="height: 500px; width: 100%" ref="mdRef" v-model="form.contentMd"
             @imgDel="imgDel" @imgAdd="imgAdd">
             <template #left-toolbar-after>
-              <!-- 新增：AI写作助手 -->
+              <!-- AI写作助手 -->
               <el-dropdown>
                 <span class="el-dropdown-link">
                   <i title="AI写作"></i>
@@ -538,7 +534,6 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="cancel">取 消</el-button>
-          <!-- 新增：AI草稿保存 -->
           <el-button type="warning" @click="saveAsAIDraft" v-if="dialog.type === 'add'">
             保存为AI草稿
           </el-button>
@@ -553,11 +548,10 @@
         <el-form-item label="爬取地址" prop="url">
           <el-input v-model="reptileForm.url" placeholder="请输入爬取地址" />
         </el-form-item>
-        <!-- 新增：选择爬取内容类型 -->
         <el-form-item label="内容类型" prop="contentType">
           <el-select v-model="reptileForm.contentType" placeholder="请选择内容类型">
-            <el-option label="文章" value="article" />
-            <el-option label="教程" value="tutorial" />
+            <el-option label="文章" value="0" />
+            <el-option label="教程" value="1" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -588,7 +582,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import { MagicStick, Promotion, TrendCharts, ArrowDown, VideoPlay } from '@element-plus/icons-vue'
 import UploadImage from '@/components/Upload/Image.vue'
@@ -597,13 +591,12 @@ import { getTagListApi } from '@/api/article/tag'
 import {
   getArticleListApi, getDetailApi, deleteArticleApi,
   addArticleApi, updateArticleApi, updateStatusApi, reptileArticleApi,
-  // 新增API
   // batchUpdateContentTypeApi,
   // generateAIDescriptionApi,
   // setFeaturedApi,
   // setHotApi
 } from '@/api/article'
-import { uploadApi,deleteFileApi } from '@/api/file'
+import { uploadApi, deleteFileApi } from '@/api/file'
 import { getDictDataByDictTypesApi } from '@/api/system/dict'
 
 // 模拟数据
@@ -618,12 +611,11 @@ const queryParams = reactive({
   categoryId: undefined,
   tagId: undefined,
   status: undefined,
-  // 新增参数
   contentType: '',
   difficulty: ''
 })
 
-// 新增：AI操作面板显示
+// AI操作面板显示
 const showAIOptions = ref(false)
 
 const loading = ref(false)
@@ -631,7 +623,7 @@ const total = ref(0)
 const tableData = ref([])
 const queryFormRef = ref<FormInstance>()
 const formRef = ref<FormInstance>()
-const mdRef = ref();
+const mdRef = ref()
 const submitLoading = ref(false)
 
 // 选中项数组
@@ -666,9 +658,8 @@ const form = reactive<any>({
   isCarousel: 0,
   isRecommend: 0,
   keywords: '',
-  // 新增字段
-  contentType: 'article',
-  difficulty: 'beginner',
+  contentType: '0',
+  difficulty: '0',
   readTime: 10,
   isFeatured: 0,
   isHot: 0,
@@ -678,7 +669,7 @@ const form = reactive<any>({
 
 const reptileForm = reactive({
   url: '',
-  contentType: 'article'
+  contentType: '0'
 })
 
 const statusOptions = ref<any>([])
@@ -690,17 +681,17 @@ const videoInput = ref('')
 const tagName = ref('')
 const categoryName = ref('')
 
-// 新增：难度级别映射
+// 难度级别映射
 const difficultyMap = {
-  'beginner': '初级',
-  'intermediate': '中级',
-  'advanced': '高级'
+  '0': '初级',
+  '1': '中级',
+  '2': '高级'
 }
 
 const difficultyTypeMap = {
-  'beginner': 'success',
-  'intermediate': 'warning',
-  'advanced': 'danger'
+  '0': 'success',
+  '1': 'warning',
+  '2': 'danger'
 }
 
 // 表单校验规则
@@ -742,7 +733,6 @@ const rules = reactive<FormRules>({
       }
     }
   ],
-  // 新增规则
   contentType: [
     { required: true, message: '请选择内容类型', trigger: 'change' }
   ],
@@ -751,7 +741,7 @@ const rules = reactive<FormRules>({
       required: false,
       trigger: 'change',
       validator: (rule: any, value: string, callback: any) => {
-        if (form.contentType === 'tutorial' && !value) {
+        if (form.contentType === '1' && !value) {
           callback(new Error('教程必须选择难度级别'))
         } else {
           callback()
@@ -761,7 +751,7 @@ const rules = reactive<FormRules>({
   ]
 })
 
-// 新增：处理内容类型变更
+// 处理内容类型变更
 const handleContentTypeChange = (value: string) => {
   if (value === 'article') {
     form.difficulty = ''
@@ -771,12 +761,12 @@ const handleContentTypeChange = (value: string) => {
   }
 }
 
-// 新增：获取难度标签
+// 获取难度标签
 const getDifficultyLabel = (difficulty: string) => {
   return difficultyMap[difficulty] || difficulty
 }
 
-// 新增：获取难度类型
+// 获取难度类型
 const getDifficultyType = (difficulty: string) => {
   return difficultyTypeMap[difficulty] || 'info'
 }
@@ -881,6 +871,7 @@ const getList = async () => {
     tableData.value = data.records
     total.value = data.total
   } catch (error) {
+    console.error(error)
   }
   loading.value = false
 }
@@ -900,7 +891,6 @@ const handleSelectionChange = (selection: any[]) => {
 // 爬取文章
 const submitReptile = () => {
   if (!reptileForm.url) return
-  // 修改：传递内容类型
   reptileArticleApi({
     url: reptileForm.url,
     contentType: reptileForm.contentType
@@ -909,7 +899,7 @@ const submitReptile = () => {
     getList()
     reptileDialog.visible = false
     reptileForm.url = ''
-    reptileForm.contentType = 'article'
+    reptileForm.contentType = '0'
   })
 }
 
@@ -928,6 +918,7 @@ const handleBatchDelete = () => {
       selectedIds.value = []
       getList()
     } catch (error) {
+      console.error(error)
     }
   })
 }
@@ -944,6 +935,7 @@ const handleDelete = (row: any) => {
       ElMessage.success('删除成功')
       getList()
     } catch (error) {
+      console.error(error)
     }
   })
 }
@@ -986,9 +978,8 @@ const clearForm = () => {
   form.isCarousel = 0
   form.isRecommend = 0
   form.keywords = ''
-  // 新增：清空AI相关字段
-  form.contentType = 'article'
-  form.difficulty = 'beginner'
+  form.contentType = '0'
+  form.difficulty = '0'
   form.readTime = 10
   form.isFeatured = 0
   form.isHot = 0
@@ -1012,10 +1003,6 @@ const handleUpdate = (row: any) => {
   dialog.visible = true
   getDetailApi(row.id).then((res) => {
     Object.assign(form, res.data)
-    // 如果后端返回了tags数组，转换为字符串数组
-    // if (res.data.tags && Array.isArray(res.data.tags)) {
-    //   form.tags = res.data.tags.map(tag => tag.name)
-    // }
   })
 }
 
@@ -1027,8 +1014,7 @@ const submitForm = async () => {
     if (valid) {
       submitLoading.value = true
       form.content = mdRef.value.d_render;
-      // 新增：如果是教程，确保有slug
-      if (form.contentType === 'tutorial' && !form.slug && form.title) {
+      if (form.contentType === '1' && !form.slug && form.title) {
         form.slug = generateSlug(form.title)
       }
       try {
@@ -1042,6 +1028,7 @@ const submitForm = async () => {
         getList()
         dialog.visible = false
       } catch (error) {
+        console.error(error)
       } finally {
         submitLoading.value = false
       }
@@ -1055,7 +1042,7 @@ const cancel = () => {
   reptileDialog.visible = false
   formRef.value?.resetFields()
   reptileForm.url = ''
-  reptileForm.contentType = 'article'
+  reptileForm.contentType = '0'
 }
 
 // 分页大小改变
@@ -1083,19 +1070,19 @@ onMounted(() => {
   getStatusList()
 })
 
-// ============ 新增AI相关功能 ============
+// ============ AI相关功能 ============
 
 // 1. AI快速创建
 const handleAICreate = (command: string) => {
   switch (command) {
     case 'ai-tutorial':
       handleAdd()
-      form.contentType = 'tutorial'
+      form.contentType = '1'
       form.title = 'AI教程：'
       break
     case 'ai-article':
       handleAdd()
-      form.contentType = 'article'
+      form.contentType = '0'
       form.title = 'AI文章：'
       break
     case 'ai-translate':
@@ -1119,12 +1106,13 @@ const batchSetAsTutorial = async () => {
     try {
       await batchUpdateContentTypeApi({
         ids: selectedIds.value,
-        contentType: 'tutorial',
-        difficulty: 'beginner'
+        contentType: '1',
+        difficulty: '0'
       })
       ElMessage.success('操作成功')
       getList()
     } catch (error) {
+      console.error(error)
     }
   })
 }
@@ -1141,6 +1129,7 @@ const generateAIDescriptions = async () => {
     ElMessage.success('AI描述生成成功')
     getList()
   } catch (error) {
+    console.error(error)
   }
 }
 
@@ -1151,8 +1140,8 @@ const analyzeContentTrends = () => {
 
 // 5. 设为教程/文章
 const handleSetAsTutorial = async (row: any) => {
-  const newType = row.contentType === 'tutorial' ? 'article' : 'tutorial'
-  const action = newType === 'tutorial' ? '设为教程' : '设为文章'
+  const newType = row.contentType === '1' ? '0' : '1'
+  const action = newType === '1' ? '设为教程' : '设为文章'
   
   ElMessageBox.confirm(`确定将"${row.title}"${action}吗？`, '提示', {
     confirmButtonText: '确定',
@@ -1163,11 +1152,12 @@ const handleSetAsTutorial = async (row: any) => {
       await updateArticleApi({
         id: row.id,
         contentType: newType,
-        difficulty: newType === 'tutorial' ? 'beginner' : ''
+        difficulty: newType === '1' ? '0' : ''
       })
       ElMessage.success('操作成功')
       getList()
     } catch (error) {
+      console.error(error)
     }
   })
 }
@@ -1185,6 +1175,7 @@ const handleGenerateDescription = async (row: any) => {
       ElMessage.success('AI描述生成成功')
     }
   } catch (error) {
+    console.error(error)
   }
 }
 
@@ -1199,6 +1190,7 @@ const handleSetFeatured = async (row: any) => {
     row.isFeatured = newValue
     ElMessage.success('操作成功')
   } catch (error) {
+    console.error(error)
   }
 }
 
@@ -1213,6 +1205,7 @@ const handleSetHot = async (row: any) => {
     row.isHot = newValue
     ElMessage.success('操作成功')
   } catch (error) {
+    console.error(error)
   }
 }
 
@@ -1225,8 +1218,8 @@ const generateAITitle = async () => {
   
   // 模拟AI生成标题
   const keywords = form.keywords ? form.keywords.split(',') : []
-  const baseTitle = form.contentType === 'tutorial' ? 'AI教程' : 'AI文章'
-  const newTitle = `${baseTitle}：${keywords[0] || '人工智能'}的${form.contentType === 'tutorial' ? '完整指南' : '深度解析'}`
+  const baseTitle = form.contentType === '1' ? 'AI教程' : 'AI文章'
+  const newTitle = `${baseTitle}：${keywords[0] || '人工智能'}的${form.contentType === '1' ? '完整指南' : '深度解析'}`
   form.title = newTitle
   ElMessage.success('AI标题生成成功')
 }
@@ -1252,7 +1245,7 @@ const generateAIDescription = async () => {
   }
   
   // 模拟AI生成描述
-  const aiDescription = `${form.title || '本文'}是一篇关于人工智能技术的${form.contentType === 'tutorial' ? '详细教程' : '深度文章'}，适合${form.difficulty === 'beginner' ? '初学者' : form.difficulty === 'intermediate' ? '中级学习者' : '高级专业人士'}阅读。`
+  const aiDescription = `${form.title || '本文'}是一篇关于人工智能技术的${form.contentType === '1' ? '详细教程' : '深度文章'}，适合${form.difficulty === '0' ? '初学者' : form.difficulty === '1' ? '中级学习者' : '高级专业人士'}阅读。`
   form.aiDescribe = aiDescription
   ElMessage.success('AI描述生成成功')
 }
@@ -1293,7 +1286,7 @@ const improveContent = async () => {
     return
   }
   
-  // 简单的内容优化（实际应该调用AI API）
+  // 简单的内容优化
   const improvedContent = form.contentMd
     .replace(/。/g, '。\n')
     .replace(/，/g, '，\n')
@@ -1328,6 +1321,7 @@ const saveAsAIDraft = async () => {
         getList()
         dialog.visible = false
       } catch (error) {
+        console.error(error)
       } finally {
         submitLoading.value = false
       }

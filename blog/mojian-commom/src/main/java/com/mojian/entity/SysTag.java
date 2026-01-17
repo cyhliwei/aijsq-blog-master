@@ -1,17 +1,17 @@
 package com.mojian.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.mojian.utils.DateUtil;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+        import com.baomidou.mybatisplus.annotation.*;
+        import com.fasterxml.jackson.annotation.JsonFormat;
+        import com.mojian.utils.DateUtil;
+        import io.swagger.annotations.ApiModel;
+        import io.swagger.annotations.ApiModelProperty;
+        import lombok.AllArgsConstructor;
+        import lombok.Builder;
+        import lombok.Data;
+        import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+        import java.io.Serializable;
+        import java.time.LocalDateTime;
 
 /**
  * 标签表
@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @TableName("sys_tag")
 @ApiModel(value = "标签表对象")
+
 public class SysTag implements Serializable {
 
     @TableId(type = IdType.AUTO)
@@ -30,6 +31,18 @@ public class SysTag implements Serializable {
 
     @ApiModelProperty(value = "名称")
     private String name;
+
+    @ApiModelProperty(value = "URL友好名称")
+    private String slug;
+
+    @ApiModelProperty(value = "标签描述")
+    private String description;
+
+    @ApiModelProperty(value = "标签类型")
+    private String tagType;
+
+    @ApiModelProperty(value = "是否热门 0:否 1:是")
+    private Integer isHot;
 
     @ApiModelProperty(value = "排序")
     private Integer sort;

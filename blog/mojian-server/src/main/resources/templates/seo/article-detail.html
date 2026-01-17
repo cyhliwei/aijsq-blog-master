@@ -1,0 +1,145 @@
+<!-- blog/mojian-server/src/main/resources/templates/seo/article-detail.html -->
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 基础 SEO 标签 -->
+    <title th:text="${article.title} + ' - ' + ${webConfig.name}">文章标题 - 网站名称</title>
+    <meta name="description" th:content="${article.summary}">
+    <meta name="keywords" th:content="${article.keywords}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" th:href="${canonical}">
+
+    <!-- Open Graph 标签 -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" th:content="${article.title}">
+    <meta property="og:description" th:content="${article.summary}">
+    <meta property="og:image" th:content="${article.cover}">
+    <meta property="og:url" th:content="${canonical}">
+    <meta property="article:published_time" th:content="${#temporals.format(article.createTime, 'yyyy-MM-dd')}">
+    <meta property="article:author" th:content="${webConfig.author}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" th:content="${article.title}">
+    <meta name="twitter:description" th:content="${article.summary}">
+    <meta name="twitter:image" th:content="${article.cover}">
+
+    <!-- 结构化数据 (JSON-LD) -->
+    <script type="application/ld+json" th:inline="javascript">
+        {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": [[${article.title}]],
+            "description": [[${article.summary}]],
+            "image": [[${article.cover}]],
+            "author": {
+                "@type": "Person",
+                "name": [[${webConfig.author}]]
+            },
+            "datePublished": [[${#temporals.format(article.createTime, 'yyyy-MM-dd')}]],
+            "dateModified": [[${#temporals.format(article.updateTime, 'yyyy-MM-dd')}]]
+        }
+    </script>
+</head>
+<body>
+<!-- 头部导航 -->
+<header>
+    <h1>
+        <a href="/" th:text="${webConfig.name}">网站名称</a>
+    </h1>
+    <nav>
+        <a href="/">首页</a>
+        <a href="/category" th:each="cat : ${categories}"
+           th:href="'/category/' + ${cat.id}"
+           th:text="${cat.name}">分类名</a>
+    </nav>
+</header>
+
+<!-- 文章内容 -->
+<main>
+    <article itemscope itemtype="https://schema.org/BlogPosting">
+        <!-- 文章头部信息 -->
+        <header class="article-header">
+            <h1 itemprop="headline" th:text="${article.title}">文章标题</h1>
+            <div class="article-meta">
+                    <span class="category" th:if="${category}">
+                        <a th:href="'/category/' + ${category.id}" th:text="${category.name}">分类</a>
+                    </span>
+                <span class="date"
+                      th:text="'发布于 ' + ${#temporals.format(article.createTime, 'yyyy-MM-dd')}">
+                        发布时间
+                    </span>
+                <span class="views" th:text="'阅读 ' + ${article.quantity} + ' 次'">
+                        阅读量
+                    </span>
+            </div>
+        </header>
+
+        <!-- 文章封面 -->
+        <div class="article-cover" th:if="${article.cover}">
+            <img th:src="${article.cover}" alt="文章封面">
+        </div>
+
+        <!-- 文章正文 -->
+        <div class="article-content" itemprop="articleBody"
+             th:utext="${article.content}">
+            文章内容...
+        </div>
+
+        <!-- 文章底部信息 -->
+        <footer class="article-footer">
+            <div class="tags" th:if="${article.keywords}">
+                <strong>标签：</strong>
+                <span th:each="keyword : ${#strings.arraySplit(article.keywords, ',')}">
+                        <span class="tag" th:text="${keyword}">标签</span>
+                    </span>
+            </div>
+            <div class="copyright" th:if="${article.isOriginal == 0}">
+                <p>原文链接：<a th:href="${article.originalUrl}" target="_blank"
+                           th:text="${article.originalUrl}">转载地址</a></p>
+            </div>
+        </footer>
+    </article>
+</main>
+
+<!-- 侧边栏 -->
+<aside>
+    <div class="widget">
+        <h3>关于作者</h3>
+        <img th:src="${webConfig.authorAvatar}" alt="作者头像">
+        <p th:text="${webConfig.authorInfo}">个性签名</p>
+    </div>
+
+    <div class="widget">
+        <h3>文章分类</h3>
+        <ul>
+            <li th:each="cat : ${categories}">
+                <a th:href="'/category/' + ${cat.id}" th:text="${cat.name}">分类名</a>
+            </li>
+        </ul>
+    </div>
+</aside>
+
+<!-- 页脚 -->
+<footer>
+    <p>&copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2024</span>
+        <span th:text="${webConfig.name}">网站名称</span>.
+        <span th:text="${webConfig.recordNum}">备案号</span>
+    </p>
+</footer>
+
+<!-- JavaScript (可选: 为普通用户加载评论等功能) -->
+<script>
+    // 检测是否是爬虫
+    // const isBot = /bot|crawl|spider|slurp|mediapartners/i.test(navigator.userAgent);
+    // if (!isBot) {
+    //     // 动态加载 Vue SPA 应用
+    //     window.location.href = window.location.pathname;
+    // }
+</script>
+</body>
+</html>

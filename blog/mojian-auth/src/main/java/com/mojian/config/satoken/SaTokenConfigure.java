@@ -1,5 +1,6 @@
 package com.mojian.config.satoken;
 
+import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpUtil;
 import org.springframework.context.annotation.Configuration;
@@ -12,9 +13,13 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 Sa-Token 拦截器，定义详细的拦截路由
-        registry.addInterceptor(new SaInterceptor(handle -> StpUtil.checkLogin()))
+        registry.addInterceptor(new SaInterceptor(handle -> {
+            System.out.println("拦截路径: " + SaHolder.getRequest().getRequestPath());
+            StpUtil.checkLogin();
+            }))
                 .addPathPatterns("/**")
                 .excludePathPatterns(
+                        "/",
                         "/auth/login",
                         "/auth/logout",
                         "/auth/verify",
@@ -25,6 +30,8 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                         "/favicon.ico",     // openapi接口文档
                         "/swagger-resources",
                         "/api/**",
+                        "/seo-posts/**",
+                        "/seo-category/**",
                         "/wechat/**",
                         "/localFile/**"
                 );

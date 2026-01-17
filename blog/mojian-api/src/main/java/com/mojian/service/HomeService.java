@@ -36,4 +36,5 @@ public interface HomeService {
      */
     Map<String, List<SysNotice>> getNotice();
 
+    JSONObject getCarousels(String type);
 }

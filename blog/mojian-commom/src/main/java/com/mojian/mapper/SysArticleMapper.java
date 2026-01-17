@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -95,4 +96,18 @@ public interface SysArticleMapper extends BaseMapper<SysArticle> {
     IPage<ArticleListVo> selectMyArticle(@Param("page")Page<Object> page,@Param("article") SysArticle article);
 
     void updateBatchQuantity(@Param("articles") List<SysArticle> articles);
+
+    void getCarousels(String type);
+
+    ArticleDetailVo getDetailByMenuId(String menuId);
+
+    List<HashMap<String, Object>> aiNews();
+
+    List<HashMap<String, Object>> aiNewsCates();
+
+    List<HashMap<String, Object>> aiNewsTopics();
+
+    List<HashMap<String, Object>> tutorial_popular();
+
+    List<HashMap<String, Object>> tutorial_categories();
 }

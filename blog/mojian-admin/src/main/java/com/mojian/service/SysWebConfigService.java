@@ -6,4 +6,6 @@ import com.mojian.entity.SysWebConfig;
 public interface SysWebConfigService extends IService<SysWebConfig> {
 
     void update(SysWebConfig sysWebConfig);
+
+    SysWebConfig getConfig();
 }

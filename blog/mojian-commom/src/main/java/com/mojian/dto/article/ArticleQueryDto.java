@@ -23,4 +23,6 @@ public class ArticleQueryDto {
     private String contentType;
     @ApiModelProperty(value = "难度级别")
     private String difficulty;
+    @ApiModelProperty(value = "agi菜单id")
+    private String menuId;
 }

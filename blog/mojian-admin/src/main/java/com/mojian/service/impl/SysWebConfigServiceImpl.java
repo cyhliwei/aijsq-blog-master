@@ -1,6 +1,7 @@
 package com.mojian.service.impl;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mojian.common.RedisConstants;
 import com.mojian.entity.SysWebConfig;
@@ -22,5 +23,10 @@ public class SysWebConfigServiceImpl extends ServiceImpl<SysWebConfigMapper, Sys
     public void update(SysWebConfig sysWebConfig) {
         baseMapper.updateById(sysWebConfig);
         redisUtil.set(RedisConstants.WEB_CONFIG_KEY, JSONObject.toJSONString(sysWebConfig));
+    }
+
+    @Override
+    public SysWebConfig getConfig() {
+        return baseMapper.selectOne(new LambdaQueryWrapper<SysWebConfig>().last("limit 1"));
     }
 }

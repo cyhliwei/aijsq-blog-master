@@ -39,7 +39,11 @@ public class HomeController {
     public Result<JSONObject> getHotSearch(@PathVariable String type) {
         return Result.success(homeService.getHotSearch(type));
     }
-
+    @GetMapping("/carousels")
+    @ApiOperation(value = "获取轮播图数据")
+    public Result<JSONObject> getCarousels(@PathVariable String type) {
+        return Result.success(homeService.getCarousels(type));
+    }
     @GetMapping("/report")
     @ApiOperation(value = "添加访问量")
     public Result<Void> report() {

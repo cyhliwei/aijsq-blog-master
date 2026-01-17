@@ -140,9 +140,15 @@ public class SysArticleDetailVo {
     @ApiModelProperty(value = "Ai生成的简短描述")
     private String aiDescribe;
 
+    @ApiModelProperty(value = "agi菜单id")
+    private String menuId;
+
+
     @ApiModelProperty(value = "发布时间")
     private LocalDateTime publishedAt;
 
     @ApiModelProperty(value = "标签集合")
     private List<String> tags;
+    @ApiModelProperty(value = "标签集合")
+    private List<Integer> tagIds;
 }

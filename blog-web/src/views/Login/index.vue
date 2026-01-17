@@ -3,7 +3,7 @@
     <div class="login-container">
       <!-- 登录表单 -->
       <div class="login-body">
-        <el-tooltip
+        <!-- <el-tooltip
           class="item"
           effect="dark"
           content="回到首页"
@@ -12,26 +12,26 @@
           <button class="back-btn" @click="backToHome">
             <i class="el-icon-back"></i>
           </button>
-        </el-tooltip>
-        <el-tooltip
+        </el-tooltip> -->
+        <!-- <el-tooltip
           class="item"
           effect="dark"
           :content="currentForm === 'login' ? '账号密码登录' : '扫码登录'"
           placement="top"
         >
-          <button class="switch-form-btn" @click="handleSwitchForm">
+          <button class="switch- -btn" @click="handleSwitchForm">
             <i
               :class="
                 currentForm === 'login' ? 'el-icon-user' : 'fas fa-qrcode'
               "
             ></i>
           </button>
-        </el-tooltip>
+        </el-tooltip> -->
         <!-- 微信扫码登录 -->
-        <div v-show="currentForm === 'login'" class="form-container">
+        <!-- <div v-show="currentForm === 'login'" class="form-container">
           <div class="qrcode-content">
             <div class="qrcode-box">
-              <!-- 这里放二维码图片 -->
+               这里放二维码图片
               <img
                 v-lazy="'https://img.shiyit.com/qrcode.jpg'"
                 :key="'https://img.shiyit.com/qrcode.jpg'"
@@ -67,7 +67,7 @@
               </el-tooltip>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- 账号密码登录表单 -->
         <div v-show="currentForm === 'account'" class="form-container">
@@ -81,7 +81,7 @@
               <el-input
                 prefix-icon="el-icon-user-solid"
                 v-model="loginForm.username"
-                placeholder="请输入用户名"
+                placeholder="请输入用户名( 邮箱 )"
                 @keyup.enter.native="handleLogin"
                 size="large"
               />
@@ -144,7 +144,7 @@
               />
             </el-form-item>
 
-            <el-form-item class="form-item" prop="code">
+            <!-- <el-form-item class="form-item" prop="code">
               <el-input
                 prefix-icon="el-icon-key"
                 v-model="registerForm.code"
@@ -156,7 +156,7 @@
                   </el-button>
                 </template>
               </el-input>
-            </el-form-item>
+            </el-form-item> -->
 
             <el-form-item class="form-item" prop="password">
               <el-input
@@ -198,7 +198,7 @@
               />
             </el-form-item>
 
-            <el-form-item class="form-item" prop="code">
+            <!-- <el-form-item class="form-item" prop="code">
               <el-input
                 prefix-icon="el-icon-key"
                 v-model="forgotForm.code"
@@ -213,7 +213,7 @@
                   </el-button>
                 </template>
               </el-input>
-            </el-form-item>
+            </el-form-item> -->
 
             <el-form-item class="form-item" prop="password">
               <el-input
@@ -281,7 +281,8 @@ export default {
   },
   data() {
     return {
-      currentForm: "login",
+      // currentForm: "login",
+      currentForm:"account",
       loading: false,
       wechatForm: {
         code: "",
@@ -351,10 +352,10 @@ export default {
             trigger: "blur",
           },
         ],
-        email: [
-          { required: true, message: "请输入邮箱", trigger: "blur" },
-          { type: "email", message: "请输入正确的邮箱", trigger: "blur" },
-        ],
+        // email: [
+        //   { required: true, message: "请输入邮箱", trigger: "blur" },
+        //   { type: "email", message: "请输入正确的邮箱", trigger: "blur" },
+        // ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           {
@@ -462,7 +463,7 @@ export default {
           try {
             await registerApi(this.registerForm);
             this.$message.success("注册成功");
-            this.switchForm("login");
+            this.switchForm("account");
           } catch (error) {
             this.$message.error(error.message || "注册失败，请重试");
           } finally {
@@ -485,7 +486,7 @@ export default {
             // 调用重置密码接口
             await forgotPasswordApi(this.forgotForm);
             this.$message.success("密码重置成功");
-            this.switchForm("login");
+            this.switchForm("account");
           } catch (error) {
             this.$message.error(error.message || "重置失败，请重试");
           } finally {

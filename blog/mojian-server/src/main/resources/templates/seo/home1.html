@@ -1,0 +1,50 @@
+<!-- blog/mojian-server/src/main/resources/templates/seo/home.html -->
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${webConfig.name} + ' - ' + ${webConfig.summary}">网站名称</title>
+    <meta name="description" th:content="${webConfig.summary}">
+    <link rel="canonical" th:href="${canonical}">
+</head>
+<body>
+<header>
+    <h1 th:text="${webConfig.name}">网站名称</h1>
+    <nav>
+        <a href="/">首页</a>
+        <a th:each="cat : ${categories}"
+           th:href="'/category/' + ${cat.id}"
+           th:text="${cat.name}">分类</a>，
+    </nav>
+</header>
+
+<main>
+    <div class="article-list">
+        <article class="article-item" th:each="article : ${articles}">
+            <a th:href="'/posts/' + ${article.id}">
+                <div class="article-cover" th:if="${article.cover}">
+                    <img th:src="${article.cover}" alt="">
+                </div>
+                <h2 th:text="${article.title}">文章标题</h2>
+                <p class="summary" th:text="${article.summary}">文章摘要</p>
+                <div class="meta">
+                        <span th:if="${article.category}">
+                            <a th:href="'/category/' + ${article.category.id}"
+                               th:text="${article.category.name}">分类</a>
+                        </span>
+                    <span th:text="${#temporals.format(article.createTime, 'yyyy-MM-dd')}">时间</span>
+                </div>
+            </a>
+        </article>
+    </div>
+</main>
+
+<script>
+    const isBot = /bot|crawl|spider|slurp|mediapartners/i.test(navigator.userAgent);
+    if (!isBot) {
+        window.location.href = '/';
+    }
+</script>
+</body>
+</html>

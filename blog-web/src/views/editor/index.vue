@@ -61,10 +61,10 @@
                             <i class="fas fa-folder"></i>
                             文章分类
                         </h3>
-                        <el-form-item prop="categoryId">
-                            <el-select v-model="articleForm.categoryId" placeholder="请选择分类">
+                        <el-form-item prop="categoryName">
+                            <el-select v-model="articleForm.categoryName" placeholder="请选择分类">
                                 <el-option v-for="item in categories" :key="item.id" :label="item.name"
-                                    :value="item.id">
+                                    :value="item.name">
                                 </el-option>
                             </el-select>
                         </el-form-item>
@@ -75,10 +75,10 @@
                             <i class="fas fa-tags"></i>
                             文章标签
                         </h3>
-                        <el-form-item prop="tagIds">
-                            <el-select v-model="articleForm.tagIds" multiple filterable allow-create default-first-option
+                        <el-form-item prop="tags">
+                            <el-select v-model="articleForm.tags" multiple filterable allow-create default-first-option
                                 placeholder="请选择标签">
-                                <el-option v-for="item in tags" :key="item.id" :label="item.name" :value="item.id">
+                                <el-option v-for="item in tags" :key="item.id" :label="item.name" :value="item.name">
                                 </el-option>
                             </el-select>
                         </el-form-item>
@@ -144,9 +144,12 @@ export default {
                 keywords: '',
                 isOriginal: 1,
                 originalUrl: '',
-                categoryId: '',
+                categoryId:'',
+                categoryName: '',
                 tagIds: [],
-                status: ''
+                tags:[],
+                status: '',
+                readType: 1,
             },
             rules: {
                 title: [
@@ -188,13 +191,13 @@ export default {
                         trigger: ['blur', 'change'] 
                     }
                 ],
-                cover: [
-                    { required: true, message: '请上传封面图片', trigger: 'change' }
-                ],
-                categoryId: [
+                // cover: [
+                //     { required: true, message: '请上传封面图片', trigger: 'change' }
+                // ],
+                categoryName: [
                     { required: true, message: '请选择文章分类', trigger: 'change' }
                 ],
-                tagIds: [
+                tags: [
                     { required: true, message: '请选择文章标签', trigger: 'change' },
                     { 
                         validator: (rule, value, callback) => {

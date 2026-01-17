@@ -3,7 +3,9 @@ package com.mojian.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.mojian.entity.SysAiTrend;
+import com.mojian.vo.article.SysCategoryVo;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -36,4 +38,18 @@ public interface TrendService extends IService<SysAiTrend> {
     boolean deleteByIds(List<Long> ids);
 
     SysAiTrend getDetail(String keyword);
+    /**
+     * 获取快速导航数据
+     */
+    List<HashMap<String, Object>> quickNavs();
+
+    List<HashMap<String, Object>> aiNews();
+
+    List<HashMap<String, Object>> aiNewsCates();
+
+    List<HashMap<String, Object>> aiNewsTopics();
+
+    List<HashMap<String, Object>> tutorial_popular();
+
+    List<HashMap<String, Object>> tutorial_categories();
 }

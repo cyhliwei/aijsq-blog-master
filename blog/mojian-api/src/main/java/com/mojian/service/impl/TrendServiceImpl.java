@@ -7,12 +7,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mojian.entity.SysAiTrend;
 import com.mojian.mapper.SysAiTrendMapper;
+import com.mojian.mapper.SysArticleMapper;
+import com.mojian.mapper.SysCategoryMapper;
 import com.mojian.service.TrendService;
 import com.mojian.utils.PageUtil;
+import com.mojian.vo.article.SysCategoryVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -24,7 +28,9 @@ public class TrendServiceImpl extends ServiceImpl<SysAiTrendMapper, SysAiTrend> 
 
     @Autowired
     SysAiTrendMapper trendMapper;
+    private final SysArticleMapper sysArticleMapper;
 
+    private final SysCategoryMapper sysCategoryMapper;
     /**
      * 查询AI趋势表分页列表
      */
@@ -89,5 +95,33 @@ public class TrendServiceImpl extends ServiceImpl<SysAiTrendMapper, SysAiTrend> 
         // 构建查询条件
         wrapper.eq(keyword != null && keyword !="", SysAiTrend::getKeyword, keyword);
         return trendMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public List<HashMap<String, Object>> quickNavs() {
+        return sysCategoryMapper.quickNavs();
+    }
+
+    @Override
+    public List<HashMap<String, Object>> aiNews() {
+        return sysArticleMapper.aiNews();
+    }
+
+    @Override
+    public List<HashMap<String, Object>> aiNewsCates() {
+        return sysArticleMapper.aiNewsCates();
+    }
+
+    @Override
+    public List<HashMap<String, Object>> aiNewsTopics() {
+        return sysArticleMapper.aiNewsTopics();
+    }
+    @Override
+    public List<HashMap<String, Object>> tutorial_popular() {
+        return sysArticleMapper.tutorial_popular();
+    }
+    @Override
+    public List<HashMap<String, Object>> tutorial_categories() {
+        return sysArticleMapper.tutorial_categories();
     }
 }

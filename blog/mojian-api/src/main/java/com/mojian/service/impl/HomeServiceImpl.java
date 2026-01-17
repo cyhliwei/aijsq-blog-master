@@ -7,6 +7,8 @@ import com.mojian.common.Constants;
 import com.mojian.common.RedisConstants;
 import com.mojian.common.Result;
 import com.mojian.entity.SysNotice;
+import com.mojian.mapper.SysArticleMapper;
+import com.mojian.mapper.SysCategoryMapper;
 import com.mojian.mapper.SysNoticeMapper;
 import com.mojian.service.HomeService;
 import com.mojian.entity.SysWebConfig;
@@ -32,6 +34,10 @@ public class HomeServiceImpl implements HomeService {
     private final RedisUtil redisUtil;
 
     private final SysNoticeMapper noticeMapper;
+
+    private final SysArticleMapper sysArticleMapper;
+
+    private final SysCategoryMapper sysCategoryMapper;
 
     @Override
     public Result<SysWebConfig> getWebConfig() {
@@ -98,5 +104,11 @@ public class HomeServiceImpl implements HomeService {
                 .eq(SysNotice::getIsShow, Constants.YES));
         return sysNotices.stream()
                 .collect(Collectors.groupingBy(SysNotice::getPosition));
+    }
+
+    @Override
+    public JSONObject getCarousels(String type) {
+        sysArticleMapper.getCarousels(type);
+        return null;
     }
 }

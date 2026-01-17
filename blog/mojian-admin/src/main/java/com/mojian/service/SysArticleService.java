@@ -8,6 +8,7 @@ import com.mojian.vo.article.ArticleListVo;
 import com.mojian.vo.article.SysArticleDetailVo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SysArticleService extends IService<SysArticle> {
 
@@ -52,4 +53,10 @@ public interface SysArticleService extends IService<SysArticle> {
      * @param url
      */
     void reptile(String url);
+
+    Boolean addAgi(SysArticleDetailVo sysArticle);
+
+    Map<String, Object> getSeoArticleByCategory(Long id, Integer page, int i);
+
+    Map<String, Object> getSeoArticleList(Integer page, Integer size);
 }

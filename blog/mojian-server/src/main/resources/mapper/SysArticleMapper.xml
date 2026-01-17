@@ -102,7 +102,35 @@
         </if>
         order by a.is_stick desc, a.create_time desc
     </select>
-
+    <select id="getCarousels" resultMap="articleResultMap">
+        SELECT
+        a.id,
+        a.user_id,
+        a.title,
+        a.summary,
+        a.cover,
+        a.content_md,
+        a.quantity,
+        a.is_stick,
+        a.create_time,
+        c.name AS categoryName,
+        u.nickname,
+        u.avatar
+        FROM sys_article a
+        LEFT JOIN sys_category c ON a.category_id = c.id
+        LEFT JOIN sys_user u ON a.user_id = u.id
+        WHERE a.status = 1
+        <if test="tagId != null">
+            AND a.id in (SELECT article_id FROM sys_article_tag WHERE tag_id = #{tagId})
+        </if>
+        <if test="categoryId != null">
+            AND a.category_id = #{categoryId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND a.title like concat('%',#{keyword},'%')
+        </if>
+        order by a.is_stick desc, a.create_time desc
+    </select>
     <select id="getArticleDetail" resultMap="articleDetailResultMap">
         SELECT
             a.id,
@@ -129,6 +157,33 @@
         LEFT JOIN sys_category c ON a.category_id = c.id
         LEFT JOIN sys_user u ON a.user_id = u.id
         where a.id = #{id}
+    </select>
+    <select id="getDetailByMenuId" resultMap="articleDetailResultMap">
+        SELECT
+            a.id,
+            a.user_id,
+            a.title,
+            a.summary,
+            a.cover,
+            a.content_md,
+            a.content,
+            a.quantity,
+            a.is_stick,
+            a.read_type,
+            a.create_time,
+            a.is_original,
+            a.original_url,
+            a.ai_describe,
+            c.id AS categoryId,
+            c.name AS categoryName,
+            u.nickname,
+            u.avatar,
+            (SELECT COUNT(sc.id) FROM sys_comment sc WHERE sc.article_id = a.id) AS commentNum,
+            (SELECT COUNT(sal.id) FROM sys_article_like sal WHERE sal.article_id = a.id) AS likeNum
+        FROM sys_article a
+                 LEFT JOIN sys_category c ON a.category_id = c.id
+                 LEFT JOIN sys_user u ON a.user_id = u.id
+        where a.menu_id = #{menuId}
     </select>
 
     <select id="getArticleArchive" resultType="java.lang.Integer">
@@ -261,6 +316,107 @@
             AND a.title like concat('%',#{article.title},'%')
         </if>
         order by a.is_stick desc, a.create_time desc
+    </select>
+
+    <!--   获取今日AI热点新闻  -->
+    <select id="aiNews" resultType="HashMap">
+        SELECT
+            a.id,
+            a.title,
+            a.summary AS excerpt,
+            c.name AS category,
+            a.is_hot,
+            a.published_at,
+            u.nickname AS author,
+            a.read_time,
+            a.quantity AS views,
+            (SELECT COUNT(*) FROM sys_comment cm WHERE cm.article_id = a.id) AS comments
+        FROM sys_article a
+                 LEFT JOIN sys_category c ON a.category_id = c.id
+                 LEFT JOIN sys_user u ON a.user_id = u.id
+        WHERE a.status = 1
+          AND a.published_at IS NOT NULL
+          AND a.published_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        ORDER BY a.is_hot DESC, a.published_at DESC
+            LIMIT 12;
+    </select>
+
+    <!--   获取新闻分类统计  -->
+    <select id="aiNewsCates" resultType="HashMap">
+        SELECT
+            c.id AS value,
+            c.name AS label,
+            COUNT(a.id) AS count
+                FROM sys_category c
+                    LEFT JOIN sys_article a ON c.id = a.category_id
+                    AND a.status = 1
+                    AND a.published_at IS NOT NULL
+                WHERE c.type = 0
+                  AND c.is_active = 1
+                GROUP BY c.id, c.name
+                ORDER BY c.sort ASC;
+    </select>
+    <!--   获取热门话题（从标签表获取）  -->
+    <select id="aiNewsTopics" resultType="HashMap">
+        SELECT
+            t.name,
+            COUNT(at.article_id) + COUNT(tt.tool_id) AS count
+        FROM sys_tag t
+            LEFT JOIN sys_article_tag at ON t.id = at.tag_id
+            LEFT JOIN sys_tool_tag tt ON t.id = tt.tag_id
+        WHERE t.tag_type IN ('topic', 'trend')
+          AND t.is_hot = 1
+        GROUP BY t.id, t.name
+        ORDER BY count DESC
+            LIMIT 10;
+    </select>
+    <!--   获取热门教程  -->
+    <select id="tutorial_popular" resultType="HashMap">
+        SELECT
+            a.id,
+            a.title,
+            a.summary AS excerpt,
+            c.name AS category,
+            CASE a.difficulty
+                WHEN 0 THEN '初级'
+                WHEN 1 THEN '中级'
+                WHEN 2 THEN '高级'
+                ELSE '初级'
+                END AS difficulty,
+            a.read_time,
+            a.quantity AS views,
+            a.like_count AS likes,
+            a.is_featured,
+            u.nickname AS author_name,
+            u.avatar AS author_avatar,
+            u.signature AS author_title
+        FROM sys_article a
+                 LEFT JOIN sys_category c ON a.category_id = c.id
+                 LEFT JOIN sys_user u ON a.user_id = u.id
+        WHERE a.status = 1
+          AND a.content_type = 1  -- 教程类型
+          AND a.published_at IS NOT NULL
+        ORDER BY a.is_featured DESC, a.quantity DESC, a.published_at DESC
+            LIMIT 8;
+    </select>
+
+    <!--   获取热门教程  -->
+    <select id="tutorial_categories" resultType="HashMap">
+        -- 获取教程分类统计
+        SELECT
+            c.name,
+            COUNT(a.id) AS count,
+            CONCAT('/', c.slug,'/',c.id) AS path,
+            c.icon,
+            c.bg_color
+        FROM sys_category c
+            LEFT JOIN sys_article a ON c.id = a.category_id
+            AND a.status = 1
+            AND a.content_type = 1
+        WHERE c.type = 1
+          AND c.is_active = 1
+        GROUP BY c.id, c.name, c.icon, c.bg_color
+        ORDER BY c.sort ASC;
     </select>
 
 </mapper>

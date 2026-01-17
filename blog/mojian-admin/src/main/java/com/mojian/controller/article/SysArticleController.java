@@ -42,7 +42,12 @@ public class SysArticleController {
     public Result<Boolean> add(@RequestBody SysArticleDetailVo sysArticle) {
         return Result.success(sysArticleService.add(sysArticle));
     }
-
+    @PostMapping("/addAgi")
+    @ApiOperation(value = "新增文章")
+    @SaCheckPermission("sys:article:add")
+    public Result<Boolean> addAgi(@RequestBody SysArticleDetailVo sysArticle) {
+        return Result.success(sysArticleService.addAgi(sysArticle));
+    }
     @PutMapping("/update")
     @ApiOperation(value = "修改文章")
     @SaCheckPermission("sys:article:update")

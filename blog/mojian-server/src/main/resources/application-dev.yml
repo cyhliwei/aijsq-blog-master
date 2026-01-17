@@ -14,7 +14,7 @@ spring:
     host: 127.0.0.1
     port: 6379
     timeout: 3000
-    database: 8
+    database: 4
 
 
 #==============================knife4j配置==============================
@@ -25,12 +25,12 @@ knife4j:
     username: test
     password: 123456
   openapi:
-    title: 拾壹博客接口文档
+    title: AI技术圈接口文档
     description: 一个专注于技术分享的博客平台
     # aaa"
     email: 248954763@qq.com
-    concat: 拾壹
-    url: https://www.shiyit.com
+    concat: AI技术圈
+    url: http://www.aijsq.com
     version: v1.0
     group:
       test1:

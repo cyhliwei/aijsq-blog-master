@@ -9,7 +9,7 @@
       <div class="nav-left">
         <router-link to="/" class="logo">
           <!-- <img :src="$store.state.webSiteInfo.logo" :alt="$store.state.webSiteInfo.name"> -->
-          <img src="@/assets/20251202112404.png" :alt="$store.state.webSiteInfo.name"></img>
+          <img src="@/assets/aijsq-image1.png" :alt="$store.state.webSiteInfo.name"></img>
           <span class="logo-text">{{$store.state.webSiteInfo.name}}</span>
         </router-link>
       </div>
@@ -132,42 +132,16 @@ export default {
           icon: 'fas fa-clock',
           colorClass: 'clock-link'
         },
-        // { 
-        //   name: '文章归档', 
-        //   path: '/archives', 
-        //   icon: 'fas fa-archive',
-        //   colorClass: 'archive-link',
-        //   children: [
-        //     { 
-        //       name: '归档', 
-        //       path: '/archive', 
-        //       icon: 'fas fa-clock',
-        //       colorClass: 'clock-link'
-        //     },
-        //     { 
-        //       name: '分类', 
-        //       path: '/categories', 
-        //       icon: 'fas fa-folder',
-        //       colorClass: 'category-link'
-        //     },
-        //     { 
-        //       name: '标签', 
-        //       path: '/tags', 
-        //       icon: 'fas fa-tags',
-        //       colorClass: 'tag-link'
-        //     }
-        //   ]
-        // },
         { 
           name: 'AI学院', 
-          path: '/moments', 
+          path: '/job_paths', 
           icon: 'fas fa-comment-dots',
           colorClass: 'talk-link'
         },
         { 
           name: '工具库', 
-          path: '/hotSearch',  
-          icon: 'fas fa-fire',
+          path: '/aiNavHome/null',  
+          icon: 'fas fa-tags',
           colorClass: 'hot-link'
         },
         { 
@@ -176,12 +150,6 @@ export default {
           icon: 'fas fa-fire',
           colorClass: 'hot-link'
         },
-        // { 
-        //   name: '技术社区', 
-        //   path: '/hotSearch', 
-        //   icon: 'fas fa-fire',
-        //   colorClass: 'hot-link'
-        // },
         { 
           name: '资源库', 
           path: '/resources', 
@@ -190,52 +158,10 @@ export default {
         },
         { 
           name: '技术圈', 
-          path: '/photos', 
+          path: '/chat', 
           icon: 'fas fa-images',
           colorClass: 'photos-link'
         }
-        // },
-        // { 
-        //   name: '留言板', 
-        //   path: '/messages', 
-        //   icon: 'fas fa-envelope',
-        //   colorClass: 'message-link'
-        // }
-        // },
-        // { 
-        //   name: '友情链接', 
-        //   path: '/friends', 
-        //   icon: 'fas fa-users',
-        //   colorClass: 'friend-link'
-        // },
-        // { 
-        //   name: '关于本站', 
-        //   path: '/about', 
-        //   icon: 'fas fa-info-circle',
-        //   colorClass: 'about-link',
-        //   children: [
-        //     { 
-        //       name: '关于我', 
-        //       path: '/about', 
-        //       icon: 'fas fa-user',
-        //       colorClass: 'about-me-link'
-        //     },
-        //     { 
-        //       name: '网站源码', 
-        //       path: 'https://gitee.com/quequnlong', 
-        //       icon: 'fab fa-github',
-        //       colorClass: 'github-link',
-        //       external: true 
-        //     },
-        //     { 
-        //       name: '后台管理', 
-        //       path: import.meta.env.VITE_APP_ADMIN_URL || 'http://localhost:3000',
-        //       icon: 'fas fa-tv',
-        //       colorClass: 'admin-link',
-        //       external: true 
-        //     }
-        //   ]
-        // }
       ],
       activeDropdown: null,
       showDropdown: false,

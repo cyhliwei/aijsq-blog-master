@@ -133,6 +133,34 @@ public class ArticleServiceImpl implements ArticleService {
                 .orderByAsc(SysCategory::getSort));
     }
 
+    @Override
+    public ArticleDetailVo getDetailByMenuId(String menuId) {
+        ArticleDetailVo detailVo = sysArticleMapper.getDetailByMenuId(menuId);
+        // 判断是否点赞
+        Object userId = StpUtil.getLoginIdDefaultNull();
+        if (userId != null) {
+            detailVo.setIsLike(sysArticleMapper.getUserIsLike(Long.valueOf(detailVo.getId()), Integer.parseInt(userId.toString())));
+        }
+
+        //添加阅读量
+        String ip = IpUtil.getIp();
+        ThreadUtil.execAsync(() -> {
+            Map<Object, Object> map = redisUtil.hGetAll(RedisConstants.ARTICLE_QUANTITY);
+            List<String> ipList = (List<String>) map.get(menuId);
+            if (ipList != null) {
+                if (!ipList.contains(ip)) {
+                    ipList.add(ip);
+                }
+            } else {
+                ipList = new ArrayList<>();
+                ipList.add(ip);
+            }
+            map.put(menuId, ipList);
+            redisUtil.hSetAll(RedisConstants.ARTICLE_QUANTITY, map);
+        });
+        return detailVo;
+    }
+
     private List<ArticleListVo> getArticlesByCondition(SFunction<SysArticle, Object> conditionField) {
         LambdaQueryWrapper<SysArticle> wrapper = new LambdaQueryWrapper<SysArticle>()
                 .select(SysArticle::getId, SysArticle::getTitle, SysArticle::getCover, SysArticle::getCreateTime)

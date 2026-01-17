@@ -173,7 +173,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean register(EmailRegisterDto dto) {
 
-        validateEmailCode(dto);
+        //validateEmailCode(dto);
 
         SysUser sysUser = sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, dto.getEmail()));
         if (sysUser != null) {
@@ -202,7 +202,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean forgot(EmailRegisterDto dto) {
-        validateEmailCode(dto);
+        //validateEmailCode(dto);
         SysUser sysUser = sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, dto.getEmail()));
         if (sysUser == null) {
             throw new ServiceException("当前邮箱未注册，请前往注册");
