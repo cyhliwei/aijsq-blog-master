@@ -9,7 +9,7 @@ spring:
     url: jdbc:mysql://139.9.208.63:3306/aijsq_blog?characterEncoding=UTF-8&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&tinyInt1isBit=false&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: aijsq_blog
-    password: d6YNH3pCa3LzcyWBsd
+    password: 
   redis:
     host: 139.9.208.63
     port: 6379
